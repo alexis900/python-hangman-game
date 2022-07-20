@@ -2,7 +2,64 @@ from dataclasses import replace
 from random import randint
 import os
 import platform
-from typing import Type
+
+HANGMAN_IMAGES = ['''
+
+   +---+
+   |   |
+       |
+       |
+       |
+       |
+ =========''', '''
+
+   +---+
+   |   |
+   O   |
+       |
+       |
+       |
+ =========''', '''
+
+   +---+
+   |   |
+   O   |
+   |   |
+       |
+       |
+ =========''', '''
+
+   +---+
+   |   |
+   O   |
+  /|   |
+       |
+       |
+ =========''', '''
+
+   +---+
+   |   |
+   O   |
+  /|\  |
+       |
+       |
+ =========''', '''
+
+   +---+
+   |   |
+   O   |
+  /|\  |
+  /    |
+       |
+ =========''', '''
+
+   +---+
+   |   |
+   O   |
+  /|\  |
+  / \  |
+       |
+ =========''']
 
 def clearWindow():
     MY_OS = platform.system()
@@ -34,11 +91,13 @@ def selectWord():
 
 def game():
     word = selectWord()
+    print(word)
     lenghtWord = len(word)
-    hiddenWord = ['_'] * lenghtWord 
+    hiddenWord = ['_'] * lenghtWord
+    mistakes = 0
     while True:
+        print(HANGMAN_IMAGES[mistakes])
         print(*hiddenWord)
-
         letter = input('Introduce una letra: ').upper()
         try:
             if len(letter) != 1:
@@ -52,13 +111,24 @@ def game():
             except TypeError as isNotString:
                 print(isNotString)
             else:
+                coin = 0
                 for i in range(0, lenghtWord):
-                    if letter == word[i]:
-                        hiddenWord[i] = letter
-                    if hiddenWord.count('_') == 0:
-                        print(f'¡Ganaste! La palabra secreta es {word}')
-                        return False
-            
+                    if mistakes == 5:
+                            print(HANGMAN_IMAGES[mistakes+1])
+                            print(f'¡Perdiste! Otra vez será.')
+                            return False
+                    else:
+                        if letter == word[i]:
+                            hiddenWord[i] = letter
+                            coin += 1
+
+                        if hiddenWord.count('_') == 0 and mistakes < 5:
+                            print(f'¡Ganaste! La palabra secreta es {word}')
+                            return False
+
+                if coin == 0:
+                    mistakes += 1
+                coin = 0
 
 def run():
     game()
